@@ -1,66 +1,70 @@
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import { CartLine } from '../types/product';
+import React from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { CartLine } from '../types/drug';
 import { useCartStore } from '../stores/cartStore';
-import { useState } from 'react';
 
-export default function CartItem({ line }: { line: CartLine }) {
-  const [qty, setQty] = useState<number>(line.quantity);
+interface Props {
+  line: CartLine;
+}
+
+export function CartItem({ line }: Props) {
+  const increment = useCartStore((s) => s.increment);
+  const decrement = useCartStore((s) => s.decrement);
   const remove = useCartStore((s) => s.remove);
 
-  const sum = line.product.price * qty;
-
   return (
-    <View style={styles.row}>
-      <Image source={{ uri: line.product.image_url }} style={styles.image} />
+    <View style={styles.card}>
       <View style={styles.info}>
-        <Text style={styles.name} numberOfLines={2}>
-          {line.product.name}
+        <Text style={styles.name}>{line.drug.name}</Text>
+        <Text style={styles.meta}>
+          {line.drug.form} · {line.drug.dosage}
         </Text>
-        <Text style={styles.price}>
-          {line.product.price} ₽ × {qty} = {sum} ₽
-        </Text>
-
-        <View style={styles.controls}>
-          <Pressable style={styles.qtyBtn} onPress={() => setQty(qty - 1)}>
-            <Text style={styles.qtyText}>−</Text>
-          </Pressable>
-          <Text style={styles.qty}>{qty}</Text>
-          <Pressable style={styles.qtyBtn} onPress={() => setQty(qty + 1)}>
-            <Text style={styles.qtyText}>+</Text>
-          </Pressable>
-          <Pressable onPress={() => remove(line.product.id)} style={styles.remove}>
-            <Text style={styles.removeText}>Удалить</Text>
-          </Pressable>
-        </View>
+        {line.drug.prescription_required && (
+          <Text style={styles.rx}>По рецепту</Text>
+        )}
+      </View>
+      <View style={styles.controls}>
+        <Pressable style={styles.step} onPress={() => decrement(line.drug.id)}>
+          <Text style={styles.stepText}>−</Text>
+        </Pressable>
+        <Text style={styles.qty}>{line.quantity}</Text>
+        <Pressable style={styles.step} onPress={() => increment(line.drug.id)}>
+          <Text style={styles.stepText}>+</Text>
+        </Pressable>
+        <Pressable style={styles.remove} onPress={() => remove(line.drug.id)}>
+          <Text style={styles.removeText}>✕</Text>
+        </Pressable>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    padding: 12,
-    marginHorizontal: 12,
-    marginVertical: 6,
+  card: {
     backgroundColor: '#fff',
-    borderRadius: 12,
+    borderRadius: 10,
+    padding: 12,
+    marginHorizontal: 16,
+    marginVertical: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
-  image: { width: 72, height: 72, borderRadius: 8, backgroundColor: '#f2f2f2' },
-  info: { flex: 1, marginLeft: 12 },
-  name: { fontSize: 14, fontWeight: '600', marginBottom: 4 },
-  price: { fontSize: 13, color: '#1e88e5', fontWeight: '600', marginBottom: 8 },
-  controls: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  qtyBtn: {
+  info: { flex: 1, marginRight: 12 },
+  name: { fontSize: 15, fontWeight: '600' },
+  meta: { color: '#666', fontSize: 12, marginTop: 2 },
+  rx: { color: '#c62828', fontSize: 12, fontWeight: '600', marginTop: 2 },
+  controls: { flexDirection: 'row', alignItems: 'center' },
+  step: {
     width: 30,
     height: 30,
     borderRadius: 15,
-    backgroundColor: '#eef3fa',
+    backgroundColor: '#e0f2f1',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  qtyText: { fontSize: 18, fontWeight: '700', color: '#1e88e5' },
-  qty: { fontSize: 16, fontWeight: '700', minWidth: 24, textAlign: 'center' },
-  remove: { marginLeft: 'auto' },
-  removeText: { color: '#e53935', fontSize: 13 },
+  stepText: { fontSize: 18, color: '#00897b', fontWeight: '700' },
+  qty: { marginHorizontal: 10, fontSize: 15, minWidth: 20, textAlign: 'center' },
+  remove: { marginLeft: 10, padding: 6 },
+  removeText: { color: '#c62828', fontSize: 16 },
 });

@@ -1,40 +1,21 @@
-import { Pressable, Text, View, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../types/navigation';
-import { selectCartCount, useCartStore } from '../stores/cartStore';
+import React from 'react';
+import { Pressable, StyleSheet, Text } from 'react-native';
+import { useCartStore, selectCartCount } from '../stores/cartStore';
 
-export default function HeaderCartButton() {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+interface Props {
+  onPress: () => void;
+}
+
+export default function HeaderCartButton({ onPress }: Props) {
   const count = useCartStore(selectCartCount);
-
   return (
-    <Pressable onPress={() => navigation.navigate('Cart')} style={styles.wrap}>
-      <Text style={styles.icon}>🛒</Text>
-      {count > 0 && (
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>{count}</Text>
-        </View>
-      )}
+    <Pressable onPress={onPress} style={styles.btn}>
+      <Text style={styles.text}>🛒 {count}</Text>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: { padding: 8 },
-  icon: { fontSize: 22 },
-  badge: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    backgroundColor: '#e53935',
-    borderRadius: 10,
-    minWidth: 18,
-    height: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 4,
-  },
-  badgeText: { color: '#fff', fontSize: 11, fontWeight: '700' },
+  btn: { paddingHorizontal: 8, paddingVertical: 4 },
+  text: { fontSize: 16, color: '#00897b', fontWeight: '600' },
 });
