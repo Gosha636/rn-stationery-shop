@@ -2,6 +2,7 @@
   "expo": {
     "name": "stationery-shop",
     "slug": "stationery-shop",
+    "scheme": "stationeryshop",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -26,6 +27,9 @@
         "projectId": "7f6ec0a8-78af-4f99-b003-f5c4d843d1f3"
       }
     },
-    "owner": "vakhromeevae"
+    "owner": "vakhromeevae",
+    "plugins": [
+      "expo-web-browser"
+    ]
   }
 }
